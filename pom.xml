@@ -1,16 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.uwetrottmann.trakt5</groupId>
-    <artifactId>trakt-java</artifactId>
+    <groupId>com.redissi.trakt</groupId>
+    <artifactId>trakt-kotlin</artifactId>
     <packaging>jar</packaging>
-    <version>6.4.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <name>trakt-java</name>
-    <description>trakt-java is a retrofit2 based wrapper around the trakt API v2.</description>
-    <url>https://github.com/UweTrottmann/trakt-java/</url>
-    <inceptionYear>2013</inceptionYear>
+    <name>trakt-kotlin</name>
+    <description>trakt-kotlin is a retrofit2 based wrapper around the trakt API v2.</description>
+    <url>https://github.com/IliasRedissi/trakt-kotlin</url>
+    <inceptionYear>2020</inceptionYear>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,12 +28,16 @@
             <name>Uwe Trottmann</name>
             <url>http://uwetrottmann.com</url>
         </developer>
+
+        <developer>
+            <name>Ilias Redissi</name>
+        </developer>
     </developers>
 
     <scm>
-        <url>https://github.com/UweTrottmann/trakt-java</url>
-        <connection>scm:git:git://github.com/UweTrottmann/trakt-java.git</connection>
-        <developerConnection>scm:git:git@github.com:UweTrottmann/trakt-java.git</developerConnection>
+        <url>https://github.com/IliasRedissi/trakt-kotlin</url>
+        <connection>scm:git:git://github.com/IliasRedissi/trakt-kotlin.git</connection>
+        <developerConnection>scm:git:git@github.com:IliasRedissi/trakt-kotlin.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -42,18 +45,58 @@
         <maven>3.3.9</maven>
     </prerequisites>
 
+    <repositories>
+        <repository>
+            <id>jcenter</id>
+            <url>https://jcenter.bintray.com/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <scope>compile</scope>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>1.3.61</version>
+        </dependency>
         <!-- https://github.com/square/retrofit/blob/master/CHANGELOG.md -->
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
-            <version>2.6.1</version>
+            <version>2.7.1</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-gson</artifactId>
-            <version>2.6.1</version>
+            <version>2.7.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-moshi</artifactId>
+            <version>2.7.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.moshi</groupId>
+            <artifactId>moshi</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.redissi.moshi-adapters-iso8601</groupId>
+            <artifactId>adapters-jdk8</artifactId>
+            <version>0.3.0</version>
+        </dependency>
+
+
+        <dependency>
+            <scope>compile</scope>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.4.0</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.threeten</groupId>
             <artifactId>threetenbp</artifactId>
@@ -73,17 +116,32 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+
         <dependency>
+            <scope>test</scope>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>3.12.2</version>
-            <scope>test</scope>
+            <version>3.14.0</version>
         </dependency>
         <dependency>
+            <scope>test</scope>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>3.12.0</version>
+            <version>4.4.0</version>
+        </dependency>
+        <dependency>
             <scope>test</scope>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-jdk8</artifactId>
+            <version>1.3.3</version>
+        </dependency>
+
+        <dependency>
+            <scope>test</scope>
+            <groupId>org.amshove.kluent</groupId>
+            <artifactId>kluent</artifactId>
+            <version>1.60</version>
         </dependency>
     </dependencies>
 
@@ -136,6 +194,39 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>1.3.61</version>
+                <executions>
+                    <execution>
+                        <id>kapt</id>
+                        <goals>
+                            <goal>kapt</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirs>
+                                <sourceDir>src/main/kotlin</sourceDir>
+                                <sourceDir>src/main/java</sourceDir>
+                            </sourceDirs>
+                            <annotationProcessorPaths>
+                                <annotationProcessorPath>
+                                    <groupId>com.squareup.moshi</groupId>
+                                    <artifactId>moshi-kotlin-codegen</artifactId>
+                                    <version>1.9.2</version>
+                                </annotationProcessorPath>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>compile</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
