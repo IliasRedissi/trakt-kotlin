@@ -24,32 +24,47 @@ class Comment(
     // for posting
     val movie: Movie? = null,
     val show: Show? = null,
-    val episode: Episode? = null
+    val season: Season? = null,
+    val episode: Episode? = null,
+    val list: TraktList? = null,
+    val sharing: ShareComment? = null
 ) {
 
     companion object {
         /**
          * Build a movie comment.
          */
-        fun build(movie: Movie?, comment: String?, spoiler: Boolean, review: Boolean) =
-            Comment(comment = comment, spoiler = spoiler, review = review, movie = movie)
+        fun build(movie: Movie, comment: String, spoiler: Boolean, review: Boolean, sharing: ShareComment? = null) =
+            Comment(comment = comment, spoiler = spoiler, review = review, movie = movie, sharing = sharing)
 
         /**
          * Build a show comment.
          */
-        fun build(show: Show?, comment: String?, spoiler: Boolean, review: Boolean) =
-            Comment(comment = comment, spoiler = spoiler, review = review, show = show)
+        fun build(show: Show, comment: String, spoiler: Boolean, review: Boolean, sharing: ShareComment? = null) =
+            Comment(comment = comment, spoiler = spoiler, review = review, show = show, sharing = sharing)
+
+        /**
+         * Build a season comment.
+         */
+        fun build(season: Season, comment: String, spoiler: Boolean, review: Boolean, sharing: ShareComment? = null) =
+            Comment(comment = comment, spoiler = spoiler, review = review, season = season, sharing = sharing)
 
         /**
          * Build an episode comment.
          */
-        fun build(episode: Episode?, comment: String?, spoiler: Boolean, review: Boolean) =
-            Comment(comment = comment, spoiler = spoiler, review = review, episode = episode)
+        fun build(episode: Episode, comment: String, spoiler: Boolean, review: Boolean, sharing: ShareComment? = null) =
+            Comment(comment = comment, spoiler = spoiler, review = review, episode = episode, sharing = sharing)
 
         /**
-         * Build an updated comment.
+         * Build a list comment.
          */
-        fun build(comment: String?, spoiler: Boolean, review: Boolean) =
+        fun build(list: TraktList, comment: String, spoiler: Boolean, review: Boolean, sharing: ShareComment? = null) =
+            Comment(comment = comment, spoiler = spoiler, review = review, list = list, sharing = sharing)
+
+        /**
+         * Build an updated/reply comment.
+         */
+        fun build(comment: String, spoiler: Boolean, review: Boolean) =
             Comment(comment = comment, spoiler = spoiler, review = review)
     }
 

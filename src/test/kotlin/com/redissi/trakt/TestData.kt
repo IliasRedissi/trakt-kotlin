@@ -24,6 +24,7 @@ object TestData {
     const val SHOW_TVDB_ID = 81189
     const val SHOW_TVRAGE_ID = 18164
     const val SHOW_YEAR = 2008
+    const val SEASON_TRAKT_ID = 2
     const val EPISODE_TITLE = "Pilot"
     const val EPISODE_SEASON = 1
     const val EPISODE_NUMBER = 1
