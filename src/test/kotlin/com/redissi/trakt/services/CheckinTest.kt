@@ -37,6 +37,23 @@ class CheckinTest : BaseTestCase(), TestResponse, TestMovie {
         assertEpisodeCheckin(response)
     }
 
+    @Test
+    @Throws(IOException::class)
+    fun `check into an episode with absolute number`() = runBlocking<Unit> {
+        val checkin = buildEpisodeCheckinWithAbsoluteNumber()
+        val response = trakt.checkin().checkin(checkin).body()
+        response.shouldNotBeNull()
+        // episode should be over in less than an hour
+        response.watchedAt.shouldNotBeNull().isBefore(OffsetDateTime.now().plusHours(1)).shouldBeTrue()
+        response.episode.shouldNotBeNull()
+        response.episode!!.ids.shouldNotBeNull()
+        response.episode!!.ids!!.trakt.shouldNotBeNull().shouldBeEqualTo(TestData.EPISODE_ABSOLUTE_TRAKT_ID)
+        response.episode!!.ids!!.tvdb.shouldNotBeNull().shouldBeEqualTo(TestData.EPISODE_ABSOLUTE_TVDB_ID)
+        response.show.shouldNotBeNull()
+        response.episode!!.season.shouldNotBeNull().shouldBeEqualTo(TestData.EPISODE_ABSOLUTE_SEASON_NUMBER)
+        response.episode!!.number.shouldNotBeNull().shouldBeEqualTo(TestData.EPISODE_ABSOLUTE_EPISODE_NUMBER)
+    }
+
     private fun assertEpisodeCheckin(response: EpisodeCheckinResponse) {
         // episode should be over in less than an hour
         response.watchedAt.shouldNotBeNull().isBefore(OffsetDateTime.now().plusHours(1)).shouldBeTrue()
@@ -123,6 +140,18 @@ class CheckinTest : BaseTestCase(), TestResponse, TestMovie {
             val show = Show(title = TestData.SHOW_TITLE)
             return EpisodeCheckin.Builder(
                 SyncEpisode(season = TestData.EPISODE_SEASON, number = TestData.EPISODE_NUMBER),
+                APP_VERSION,
+                APP_DATE
+            )
+                .show(show)
+                .message("This is a toasty episode!")
+                .build()
+        }
+
+        private fun buildEpisodeCheckinWithAbsoluteNumber(): EpisodeCheckin {
+            val show = Show(title = TestData.ANIME_TITLE)
+            return EpisodeCheckin.Builder(
+                SyncEpisode(numberAbs = TestData.EPISODE_ABSOLUTE_NUMBER),
                 APP_VERSION,
                 APP_DATE
             )

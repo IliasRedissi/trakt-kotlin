@@ -32,6 +32,12 @@ object TestData {
     const val EPISODE_IMDB_ID = "tt0959621"
     const val EPISODE_TMDB_ID = 62085
     const val EPISODE_TVRAGE_ID = 637041
+    const val ANIME_TITLE = "Attack on Titan"
+    const val EPISODE_ABSOLUTE_NUMBER = 29
+    const val EPISODE_ABSOLUTE_SEASON_NUMBER = 2
+    const val EPISODE_ABSOLUTE_EPISODE_NUMBER = 4
+    const val EPISODE_ABSOLUTE_TRAKT_ID = 542888
+    const val EPISODE_ABSOLUTE_TVDB_ID = 6028374
     const val USERNAME_STRING = "sean"
     val USER_SLUG = UserSlug("sean")
     const val USER_REAL_NAME = "Sean Rudford"
