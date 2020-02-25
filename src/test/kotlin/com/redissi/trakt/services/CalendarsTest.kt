@@ -42,6 +42,13 @@ class CalendarsTest : BaseTestCase() {
     }
 
     @Test
+    fun `get my DVDs`() = runBlocking {
+        val response = trakt.calendars().myDvd(START_DATE_MY_DVDS, DAYS_DVDS)
+        response.shouldNotBeNull()
+        assertMovieCalendar(response)
+    }
+
+    @Test
     @Throws(IOException::class)
     fun `get all shows`() = runBlocking<Unit> {
         // do unauthenticated call
@@ -89,6 +96,18 @@ class CalendarsTest : BaseTestCase() {
         trakt.accessToken(TEST_ACCESS_TOKEN)
     }
 
+    @Test
+    @Throws(IOException::class)
+    fun `get all DVDs`() = runBlocking<Unit> {
+        // do unauthenticated call
+        trakt.accessToken(null)
+        val response = trakt.calendars().dvd(START_DATE_ALL_DVDS, 30)
+        response.shouldNotBeNull()
+        assertMovieCalendar(response)
+        // restore auth
+        trakt.accessToken(TEST_ACCESS_TOKEN)
+    }
+
     private fun assertShowCalendar(shows: List<CalendarShowEntry>) {
         for (entry in shows) {
             entry.firstAired.shouldNotBeNull()
@@ -107,9 +126,12 @@ class CalendarsTest : BaseTestCase() {
     companion object {
         // week which has show premiere (and therefore season premiere)
         private const val START_DATE_ALL = "2016-10-01"
+        private const val START_DATE_ALL_DVDS = "2015-10-01"
         private const val START_DATE_MY_SHOWS = "2014-09-01"
         private const val TEST_DAYS = 7
         const val START_DATE_MY_MOVIES = "2014-05-01"
         const val DAYS_MOVIES = 30
+        const val START_DATE_MY_DVDS = "2016-04-01"
+        const val DAYS_DVDS = 30
     }
 }
