@@ -13,7 +13,7 @@ class MoviesTest : BaseTestCase(), TestCrew, TestStats, TestCast, TestRatings, T
     @Test
     @Throws(IOException::class)
     fun `get popular movies`() = runBlocking {
-        val movies = trakt.movies().popular(1, null, null)
+        val movies = trakt.movies().popular()
         movies.shouldNotBeNull()
         movies.size.shouldBeLessOrEqualTo(DEFAULT_PAGE_SIZE)
         for (movie in movies) {
@@ -24,7 +24,7 @@ class MoviesTest : BaseTestCase(), TestCrew, TestStats, TestCast, TestRatings, T
     @Test
     @Throws(IOException::class)
     fun `get trending movies`() = runBlocking {
-        val trendingMovies = trakt.movies().trending(1, null, null)
+        val trendingMovies = trakt.movies().trending()
         trendingMovies.shouldNotBeNull()
         trendingMovies.size.`should be less or equal to`(DEFAULT_PAGE_SIZE)
         for (trendingMovie in trendingMovies) {
@@ -80,7 +80,7 @@ class MoviesTest : BaseTestCase(), TestCrew, TestStats, TestCast, TestRatings, T
     @Test
     @Throws(IOException::class)
     fun `get comments for a movie`() = runBlocking<Unit> {
-        val comments = trakt.movies().comments(TestData.MOVIE_SLUG, 1, null, null)
+        val comments = trakt.movies().comments(TestData.MOVIE_SLUG)
         comments.shouldNotBeNull()
         comments.size.shouldBeLessOrEqualTo(DEFAULT_PAGE_SIZE)
     }

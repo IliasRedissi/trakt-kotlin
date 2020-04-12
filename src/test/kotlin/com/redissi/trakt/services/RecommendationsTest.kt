@@ -23,9 +23,9 @@ class RecommendationsTest : BaseTestCase(), TestResponse {
     @Test
     @Throws(IOException::class)
     fun `get two pages of movie recommendations`() = runBlocking<Unit> {
-        val movies1 = trakt.recommendations().movies(1, 5, null)
+        val movies1 = trakt.recommendations().movies(page = 1, limit = 5)
         movies1.shouldNotBeNull().shouldNotBeEmpty()
-        val movies2 = trakt.recommendations().movies(2, 5, null)
+        val movies2 = trakt.recommendations().movies(page = 2, limit = 5)
         movies2.shouldNotBeNull().shouldNotBeEmpty().shouldNotBeEqualTo(movies1)
     }
 
@@ -47,9 +47,9 @@ class RecommendationsTest : BaseTestCase(), TestResponse {
     @Test
     @Throws(IOException::class)
     fun `get two pages of show recommendations`() = runBlocking<Unit> {
-        val shows1 = trakt.recommendations().shows(1, 5, null)
+        val shows1 = trakt.recommendations().shows(page = 1, limit = 5)
         shows1.shouldNotBeNull().shouldNotBeEmpty()
-        val shows2 = trakt.recommendations().shows(2, 5, null)
+        val shows2 = trakt.recommendations().shows(page = 2, limit = 5)
         shows2.shouldNotBeNull().shouldNotBeEmpty().shouldNotBeEqualTo(shows1)
     }
 
