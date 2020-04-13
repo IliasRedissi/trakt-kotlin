@@ -57,9 +57,9 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("movies/played")
+    @GET("movies/played/{period}")
     suspend fun mostPlayed(
-        @Query("period") period: Period? = null,
+        @Path("period") period: Period? = null,
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -80,9 +80,9 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("movies/watched")
+    @GET("movies/watched/{period}")
     suspend fun mostWatched(
-        @Query("period") period: Period? = null,
+        @Path("period") period: Period? = null,
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -103,9 +103,9 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("movies/collected")
+    @GET("movies/collected/{period}")
     suspend fun mostCollected(
-        @Query("period") period: Period? = null,
+        @Path("period") period: Period? = null,
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -155,9 +155,9 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("movies/updates")
+    @GET("movies/updates/{start_date}")
     suspend fun recentlyUpdated(
-        @Query("start_date") startDate: LocalDate? = null,
+        @Path("start_date") startDate: LocalDate? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
