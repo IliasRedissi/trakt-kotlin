@@ -3,7 +3,10 @@ package com.redissi.trakt.services
 import com.redissi.trakt.entities.*
 import com.redissi.trakt.enums.Extended
 import com.redissi.trakt.enums.RatingsFilter
+import com.redissi.trakt.enums.SortBy
+import retrofit2.Response
 import retrofit2.http.*
+import java.time.OffsetDateTime
 
 interface Sync {
     /**
@@ -21,12 +24,56 @@ interface Sync {
      * **OAuth Required**
      *
      *
+     *  Returns all playbacks;
+     */
+    @GET("sync/playback")
+    suspend fun getPlayback(
+        @Query("limit") limit: Int? = null
+    ): List<PlaybackResponse>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns shows playbacks;
+     */
+    @GET("sync/playback/episodes")
+    suspend fun getPlaybackEpisodes(
+        @Query("limit") limit: Int? = null
+    ): List<PlaybackResponse>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns movies playbacks;
+     */
+    @GET("sync/playback/movies")
+    suspend fun getPlaybackMovies(
+        @Query("limit") limit: Int? = null
+    ): List<PlaybackResponse>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Remove a playback item from a user's playback progress list.
+     */
+    @DELETE("sync/playback/{id}")
+    suspend fun deletePlayback(
+        @Query("id") playbackId: Int
+    ): Response<Unit>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
      *  Get all collected movies in a user's collection. A collected item indicates availability to watch digitally
      * or on physical media.
      */
     @GET("sync/collection/movies")
     suspend fun collectionMovies(
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
 
     /**
@@ -38,7 +85,7 @@ interface Sync {
      */
     @GET("sync/collection/shows")
     suspend fun collectionShows(
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
 
     /**
@@ -51,7 +98,7 @@ interface Sync {
      */
     @POST("sync/collection")
     suspend fun addItemsToCollection(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -64,7 +111,7 @@ interface Sync {
      */
     @POST("sync/collection/remove")
     suspend fun deleteItemsFromCollection(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -75,41 +122,8 @@ interface Sync {
      */
     @GET("sync/watched/movies")
     suspend fun watchedMovies(
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
-
-    /**
-     * **OAuth Required**
-     *
-     *
-     *  Returns all playbacks;
-     */
-    @GET("sync/playback")
-    suspend fun getPlayback(
-        @Query("limit") limit: Int?
-    ): List<PlaybackResponse>?
-
-    /**
-     * **OAuth Required**
-     *
-     *
-     *  Returns all playbacks;
-     */
-    @GET("sync/playback/episodes")
-    suspend fun getPlaybackEpisodes(
-        @Query("limit") limit: Int?
-    ): List<PlaybackResponse>?
-
-    /**
-     * **OAuth Required**
-     *
-     *
-     *  Returns all playbacks;
-     */
-    @GET("sync/playback/movies")
-    suspend fun getPlaybackMovies(
-        @Query("limit") limit: Int?
-    ): List<PlaybackResponse>?
 
     /**
      * **OAuth Required**
@@ -119,8 +133,56 @@ interface Sync {
      */
     @GET("sync/watched/shows")
     suspend fun watchedShows(
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     * Returns movies and episodes that a user has watched, sorted by most recent.
+     * You can optionally limit the type to movies, shows, seasons or episodes.
+     *
+     * @param type Possible values:  movies, shows, seasons, episodes.
+     * @param startAt Starting date.
+     * @param endAt Ending date.
+     */
+    @GET("sync/history/{type}")
+    suspend fun history(
+        @Path("type") type: String? = null,
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<HistoryEntry>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     * Returns the history for just the specified item. For example, `/history/movies/12601` would return all
+     * watches for TRON: Legacy and `/history/shows/1388` would return all watched episodes for Breaking Bad. If
+     * an invalid `id` is sent, a 404 error will be returned. If the `id` is valid, but there is no history,
+     * an empty array will be returned.
+     *
+     *
+     * The `id` uniquely identifies each history event and can be used to remove events individually using the
+     * `POST /sync/history/remove method`. The action will be set to `scrobble`, `checkin`, or `watch`.
+     *
+     * @param type Possible values:  movies, shows, seasons, episodes.
+     * @param id Trakt ID for a specific item.
+     * @param startAt Starting date.
+     * @param endAt Ending date.
+     */
+    @GET("sync/history/{type}/{id}")
+    suspend fun history(
+        @Path("type") type: String,
+        @Path("id") id: Int,
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<HistoryEntry>?
 
     /**
      * **OAuth Required**
@@ -134,7 +196,7 @@ interface Sync {
      */
     @POST("sync/history")
     suspend fun addItemsToWatchedHistory(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -149,7 +211,7 @@ interface Sync {
      */
     @POST("sync/history/remove")
     suspend fun deleteItemsFromWatchedHistory(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -162,8 +224,10 @@ interface Sync {
      */
     @GET("sync/ratings/movies{rating}")
     suspend fun ratingsMovies(
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedMovie>?
 
     /**
@@ -176,8 +240,10 @@ interface Sync {
      */
     @GET("sync/ratings/shows{rating}")
     suspend fun ratingsShows(
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedShow>?
 
     /**
@@ -190,8 +256,10 @@ interface Sync {
      */
     @GET("sync/ratings/seasons{rating}")
     suspend fun ratingsSeasons(
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedSeason>?
 
     /**
@@ -204,8 +272,10 @@ interface Sync {
      */
     @GET("sync/ratings/episodes{rating}")
     suspend fun ratingsEpisodes(
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedEpisode>?
 
     /**
@@ -218,7 +288,7 @@ interface Sync {
      */
     @POST("sync/ratings")
     suspend fun addRatings(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -231,7 +301,7 @@ interface Sync {
      */
     @POST("sync/ratings/remove")
     suspend fun deleteRatings(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -241,8 +311,11 @@ interface Sync {
      *  Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("sync/watchlist/movies")
+    @GET("sync/watchlist/movies/{sort}")
     suspend fun watchlistMovies(
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended?
     ): List<BaseMovie>?
 
@@ -253,8 +326,11 @@ interface Sync {
      *  Returns all items in a user's watchlist filtered by shows. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("sync/watchlist/shows")
+    @GET("sync/watchlist/shows/{sort}")
     suspend fun watchlistShows(
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended?
     ): List<BaseShow>?
 
@@ -265,8 +341,11 @@ interface Sync {
      *  Returns all items in a user's watchlist filtered by seasons. When an item is watched, it will be
      * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("sync/watchlist/seasons")
+    @GET("sync/watchlist/seasons/{sort}")
     suspend fun watchlistSeasons(
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended?
     ): List<WatchlistedSeason>?
 
@@ -277,8 +356,11 @@ interface Sync {
      *  Returns all items in a user's watchlist filtered by episodes. When an item is watched, it will be
      * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("sync/watchlist/episodes")
+    @GET("sync/watchlist/episodes/{sort}")
     suspend fun watchlistEpisodes(
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended?
     ): List<WatchlistedEpisode>?
 
@@ -292,7 +374,7 @@ interface Sync {
      */
     @POST("sync/watchlist")
     suspend fun addItemsToWatchlist(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -305,6 +387,6 @@ interface Sync {
      */
     @POST("sync/watchlist/remove")
     suspend fun deleteItemsFromWatchlist(
-        @Body items: SyncItems?
+        @Body items: SyncItems
     ): SyncResponse?
 }

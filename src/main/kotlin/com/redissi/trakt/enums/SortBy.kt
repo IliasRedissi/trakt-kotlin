@@ -3,10 +3,16 @@ package com.redissi.trakt.enums
 import java.util.*
 
 enum class SortBy(private val value: String) : TraktEnum {
-    RANK("rank"), ADDED("added"), TITLE("title"), RELEASED("released"), RUNTIME("runtime"), POPULARITY("popularity"), PERCENTAGE(
-        "percentage"
-    ),
-    VOTES("votes"), MY_RATING("my_rating"), RANDOM("random");
+    RANK("rank"),
+    ADDED("added"),
+    TITLE("title"),
+    RELEASED("released"),
+    RUNTIME("runtime"),
+    POPULARITY("popularity"),
+    PERCENTAGE("percentage"),
+    VOTES("votes"),
+    MY_RATING("my_rating"),
+    RANDOM("random");
 
     companion object {
         private val STRING_MAPPING: MutableMap<String, SortBy> =
