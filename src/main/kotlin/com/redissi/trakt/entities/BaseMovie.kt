@@ -15,5 +15,6 @@ class BaseMovie(
     val lastUpdatedAt: OffsetDateTime? = null,
     @Json(name = "listed_at")
     val listedAt: OffsetDateTime? = null,
-    val plays: Int = 0
+    val plays: Int = 0,
+    val metadata: Metadata? = null
 )

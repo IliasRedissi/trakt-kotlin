@@ -15,5 +15,6 @@ class BaseEpisode(
     @Json(name = "last_watched_at")
     val lastWatchedAt: OffsetDateTime? = null,
     /** progress  */
-    val completed: Boolean? = null
+    val completed: Boolean? = null,
+    val metadata: Metadata? = null
 )

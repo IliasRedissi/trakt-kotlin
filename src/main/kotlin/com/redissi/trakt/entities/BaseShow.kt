@@ -21,6 +21,8 @@ class BaseShow(
     val lastWatchedAt: OffsetDateTime? = null,
     @Json(name = "last_updated_at")
     val lastUpdatedAt: OffsetDateTime? = null,
+    @Json(name = "reset_at")
+    val resetAt: OffsetDateTime? = null,
     /** progress  */
     val aired: Int? = null,
     val completed: Int? = null,

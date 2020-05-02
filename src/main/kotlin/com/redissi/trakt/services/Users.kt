@@ -4,6 +4,7 @@ import com.redissi.trakt.entities.*
 import com.redissi.trakt.enums.Extended
 import com.redissi.trakt.enums.HistoryType
 import com.redissi.trakt.enums.RatingsFilter
+import com.redissi.trakt.enums.SortBy
 import retrofit2.Response
 import retrofit2.http.*
 import java.time.OffsetDateTime
@@ -20,6 +21,91 @@ interface Users {
     suspend fun settings(): Settings?
 
     /**
+     * **OAuth Required**
+     *
+     * List a user's pending follow requests so they can either approve or deny them.
+     */
+    @GET("users/requests")
+    suspend fun followRequests(
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<FollowRequest>?
+
+    /**
+     * **OAuth Required**
+     *
+     * Approve a follower using the id of the request.
+     * If the id is not found, was already approved, or was already denied, a 404 error will be returned.
+     *
+     * @param id ID of the follower request.
+     */
+    @POST("users/requests/{id}")
+    suspend fun approveFollowRequests(
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    /**
+     * **OAuth Required**
+     *
+     * Deny a follower using the id of the request.
+     * If the id is not found, was already approved, or was already denied, a 404 error will be returned.
+     *
+     * @param id ID of the follower request.
+     */
+    @DELETE("users/requests/{id}")
+    suspend fun denyFollowRequests(
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    /**
+     * **OAuth Required**
+     *
+     * Get hidden items for a section. This will return an array of standard media objects.
+     * You can optionally limit the type of results to return.
+     */
+    @GET("users/hidden/{section}")
+    suspend fun hiddenItems(
+        @Path("section") section: String,
+        @Query("type") type: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<HiddenItem>?
+
+    /**
+     * **OAuth Required**
+     *
+     * Hide items for a specific section.
+     */
+    @POST("users/hidden/{section}/remove")
+    suspend fun addHiddenItems(
+        @Path("section") section: String,
+        @Body items: SyncItems
+    ): SyncResponse?
+
+    /**
+     * **OAuth Required**
+     *
+     * Unhide items for a specific section.
+     */
+    @POST("users/hidden/{section}")
+    suspend fun removeHiddenItems(
+        @Path("section") section: String,
+        @Body items: SyncItems
+    ): SyncResponse?
+
+    /**
+     * **OAuth Required**
+     *
+     * Get items a user likes.
+     */
+    @GET("users/likes/{type}")
+    suspend fun likes(
+        @Path("type") type: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<LikedItem>?
+
+    /**
      * **OAuth Optional**
      *
      *
@@ -30,8 +116,8 @@ interface Users {
      */
     @GET("users/{username}")
     suspend fun profile(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): User?
 
     /**
@@ -45,8 +131,8 @@ interface Users {
      */
     @GET("users/{username}/collection/movies")
     suspend fun collectionMovies(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
 
     /**
@@ -60,9 +146,26 @@ interface Users {
      */
     @GET("users/{username}/collection/shows")
     suspend fun collectionShows(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
+
+    /**
+     * **OAuth Optional**
+     *
+     * Returns the most recently written comments for the user.
+     *
+     * @param includeReplies Set to `true` to return replies in addition to top level comments.
+     *  Set to `only` to return only replies and no top level comments.
+     */
+    @GET("users/{username}/comments/{commentType}/{type}")
+    suspend fun comments(
+        @Path("username") userSlug: UserSlug,
+        @Path("commentType") commentType: String = "all",
+        @Path("type") type: String? = null,
+        @Query("include_replies") includeReplies: String? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<ListComment>
 
     /**
      * **OAuth Optional**
@@ -72,7 +175,7 @@ interface Users {
      */
     @GET("users/{username}/lists")
     suspend fun lists(
-        @Path("username") userSlug: UserSlug?
+        @Path("username") userSlug: UserSlug
     ): List<TraktList>?
 
     /**
@@ -83,8 +186,30 @@ interface Users {
      */
     @POST("users/{username}/lists")
     suspend fun createList(
-        @Path("username") userSlug: UserSlug?,
-        @Body list: TraktList?
+        @Path("username") userSlug: UserSlug,
+        @Body list: TraktList
+    ): TraktList?
+
+    /**
+     * **OAuth Required**
+     *
+     * Reorder all lists by sending the updated `rank` of list ids.
+     */
+    @POST("users/{username}/list/reorder")
+    suspend fun reorderLists(
+        @Path("username") userSlug: UserSlug,
+        @Body listsReorder: ListItemRank
+    ): ListReorderResponse?
+
+    /**
+     * **OAuth Optional**
+     *
+     * Returns a single custom list.
+     */
+    @GET("users/{username}/lists/{id}")
+    suspend fun list(
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String
     ): TraktList?
 
     /**
@@ -96,9 +221,9 @@ interface Users {
      */
     @PUT("users/{username}/lists/{id}")
     suspend fun updateList(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?,
-        @Body list: TraktList?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Body list: TraktList
     ): TraktList?
 
     /**
@@ -109,8 +234,30 @@ interface Users {
      */
     @DELETE("users/{username}/lists/{id}")
     suspend fun deleteList(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String
+    ): Response<Unit>
+
+    /**
+     * **OAuth Required**
+     *
+     * Votes help determine popular lists. Only one like is allowed per list per user.
+     */
+    @POST("users/{username}/lists/{id}/like")
+    suspend fun likeList(
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String
+    ): Response<Unit>
+
+    /**
+     * **OAuth Required**
+     *
+     * Remove a like on a list.
+     */
+    @DELETE("users/{username}/lists/{id}/like")
+    suspend fun removeList(
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String
     ): Response<Unit>
 
     /**
@@ -119,11 +266,14 @@ interface Users {
      *
      *  Get all items on a custom list. Items can be movies, shows, seasons, episodes, or people.
      */
-    @GET("users/{username}/lists/{id}/items")
+    @GET("users/{username}/lists/{id}/items/{type}")
     suspend fun listItems(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Path("type") type: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<ListEntry>?
 
     /**
@@ -134,9 +284,9 @@ interface Users {
      */
     @POST("users/{username}/lists/{id}/items")
     suspend fun addListItems(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?,
-        @Body items: SyncItems?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -147,9 +297,9 @@ interface Users {
      */
     @POST("users/{username}/lists/{id}/items/remove")
     suspend fun deleteListItems(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?,
-        @Body items: SyncItems?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Body items: SyncItems
     ): SyncResponse?
 
     /**
@@ -160,10 +310,22 @@ interface Users {
      */
     @POST("users/{username}/lists/{id}/items/reorder")
     suspend fun reorderListItems(
-        @Path("username") userSlug: UserSlug?,
-        @Path("id") id: String?,
-        @Body rank: ListItemRank?
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Body rank: ListItemRank
     ): ListReorderResponse?
+
+    /**
+     * Returns all top level comments for a list.
+     */
+    @GET("users/{username}/lists/{id}/comments/{sort}")
+    suspend fun listComments(
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Path("sort") sort: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<Comment>?
 
     /**
      * **OAuth Required**
@@ -177,7 +339,7 @@ interface Users {
      */
     @POST("users/{username}/follow")
     suspend fun follow(
-        @Path("username") userSlug: UserSlug?
+        @Path("username") userSlug: UserSlug
     ): Followed?
 
     /**
@@ -188,7 +350,7 @@ interface Users {
      */
     @DELETE("users/{username}/follow")
     suspend fun unfollow(
-        @Path("username") userSlug: UserSlug?
+        @Path("username") userSlug: UserSlug
     ): Response<Unit>
 
     /**
@@ -199,8 +361,8 @@ interface Users {
      */
     @GET("users/{username}/followers")
     suspend fun followers(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Follower>?
 
     /**
@@ -211,8 +373,8 @@ interface Users {
      */
     @GET("users/{username}/following")
     suspend fun following(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Follower>?
 
     /**
@@ -224,8 +386,8 @@ interface Users {
      */
     @GET("users/{username}/friends")
     suspend fun friends(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Friend>?
 
     /**
@@ -242,12 +404,12 @@ interface Users {
      */
     @GET("users/{username}/history")
     suspend fun history(
-        @Path("username") userSlug: UserSlug?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Query(value = "extended", encoded = true) extended: Extended?,
-        @Query("start_at") startAt: OffsetDateTime?,
-        @Query("end_at") endAt: OffsetDateTime?
+        @Path("username") userSlug: UserSlug,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null,
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null
     ): List<HistoryEntry>?
 
     /**
@@ -264,13 +426,13 @@ interface Users {
      */
     @GET("users/{username}/history/{type}")
     suspend fun history(
-        @Path("username") userSlug: UserSlug?,
-        @Path("type") type: HistoryType?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Query(value = "extended", encoded = true) extended: Extended?,
-        @Query("start_at") startAt: OffsetDateTime?,
-        @Query("end_at") endAt: OffsetDateTime?
+        @Path("username") userSlug: UserSlug,
+        @Path("type") type: HistoryType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null,
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null
     ): List<HistoryEntry>?
 
     /**
@@ -290,14 +452,14 @@ interface Users {
      */
     @GET("users/{username}/history/{type}/{id}")
     suspend fun history(
-        @Path("username") userSlug: UserSlug?,
-        @Path("type") type: HistoryType?,
+        @Path("username") userSlug: UserSlug,
+        @Path("type") type: HistoryType,
         @Path("id") id: Int,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Query(value = "extended", encoded = true) extended: Extended?,
-        @Query("start_at") startAt: OffsetDateTime?,
-        @Query("end_at") endAt: OffsetDateTime?
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null,
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null
     ): List<HistoryEntry>?
 
     /**
@@ -311,9 +473,11 @@ interface Users {
      */
     @GET("users/{username}/ratings/movies{rating}")
     suspend fun ratingsMovies(
-        @Path("username") userSlug: UserSlug?,
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedMovie>?
 
     /**
@@ -327,9 +491,11 @@ interface Users {
      */
     @GET("users/{username}/ratings/shows{rating}")
     suspend fun ratingsShows(
-        @Path("username") userSlug: UserSlug?,
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedShow>?
 
     /**
@@ -343,9 +509,11 @@ interface Users {
      */
     @GET("users/{username}/ratings/seasons{rating}")
     suspend fun ratingsSeasons(
-        @Path("username") userSlug: UserSlug?,
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedSeason>?
 
     /**
@@ -359,9 +527,11 @@ interface Users {
      */
     @GET("users/{username}/ratings/episodes{rating}")
     suspend fun ratingsEpisodes(
-        @Path("username") userSlug: UserSlug?,
-        @Path(value = "rating", encoded = true) filter: RatingsFilter?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path(value = "rating", encoded = true) filter: RatingsFilter? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<RatedEpisode>?
 
     /**
@@ -371,10 +541,13 @@ interface Users {
      * Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("users/{username}/watchlist/movies")
+    @GET("users/{username}/watchlist/movies/{sort}")
     suspend fun watchlistMovies(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
 
     /**
@@ -384,10 +557,13 @@ interface Users {
      * Returns all items in a user's watchlist filtered by shows. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("users/{username}/watchlist/shows")
+    @GET("users/{username}/watchlist/shows/{sort}")
     suspend fun watchlistShows(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
 
     /**
@@ -397,10 +573,13 @@ interface Users {
      * Returns all items in a user's watchlist filtered by seasons. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("users/{username}/watchlist/seasons")
+    @GET("users/{username}/watchlist/seasons/{sort}")
     suspend fun watchlistSeasons(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<WatchlistedSeason>?
 
     /**
@@ -410,11 +589,25 @@ interface Users {
      * Returns all items in a user's watchlist filtered by episodes. When an item is watched, it will be
      * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("users/{username}/watchlist/episodes")
+    @GET("users/{username}/watchlist/episodes/{sort}")
     suspend fun watchlistEpisodes(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Path("sort") sort: SortBy? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<WatchlistedEpisode>?
+
+    /**
+     * **OAuth Optional**
+     *
+     * Returns a movie or episode if the user is currently watching so
+     */
+    @GET("users/{username}/watching")
+    suspend fun watching(
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): Response<WatchingItem>
 
     /**
      * **OAuth Optional**
@@ -426,8 +619,8 @@ interface Users {
      */
     @GET("users/{username}/watched/movies")
     suspend fun watchedMovies(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
 
     /**
@@ -440,7 +633,17 @@ interface Users {
      */
     @GET("users/{username}/watched/shows")
     suspend fun watchedShows(
-        @Path("username") userSlug: UserSlug?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Path("username") userSlug: UserSlug,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
+
+    /**
+     * **OAuth Optional**
+     *
+     * Returns stats about movies, shows and episode a user has watched, collected and rated.
+     */
+    @GET("users/{username}/stats")
+    suspend fun stats(
+        @Path("username") userSlug: UserSlug
+    ): UserStats?
 }
