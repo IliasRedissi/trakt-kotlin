@@ -1,13 +1,13 @@
-trakt-java
+trakt-kotlin
 ==========
 
-A Java wrapper around the [trakt v2 API](http://docs.trakt.apiary.io/) using [retrofit 2](https://square.github.io/retrofit/).
+A Kotlin wrapper around the [trakt v2 API](http://docs.trakt.apiary.io/) using [retrofit 2](https://square.github.io/retrofit/).
 
 Pull requests are welcome.
 
 Trakt methods are grouped into service objects which can be centrally
-managed by a `TraktV2` instance. It will act as a factory for
-all of the services and will automatically initialize them with your
+managed by a `Trakt` instance. It will act as a factory for
+all the services and will automatically initialize them with your
 API key (OAuth client id) and optionally a given user access token.
 
 ## Usage
@@ -17,32 +17,21 @@ API key (OAuth client id) and optionally a given user access token.
 Add the following dependency to your Gradle project:
 
 ```groovy
-implementation 'com.uwetrottmann.trakt5:trakt-java:6.4.0'
+implementation("com.redissi.trakt:trakt-kotlin:1.0.0-alpha01")
 ```
 
 Or for Maven:
 
 ```xml
 <dependency>
-  <groupId>com.uwetrottmann.trakt5</groupId>
-  <artifactId>trakt-java</artifactId>
-  <version>6.4.0</version>
+  <groupId>com.redissi.trakt</groupId>
+  <artifactId>trakt-kotlin</artifactId>
+  <version>1.0.0-alpha01</version>
 </dependency>
 ```
 
 ### Android
-This library ships Java 8 bytecode. This requires Android Gradle Plugin 3.2.x or newer.
-
-This library depends on [threetenbp](https://github.com/ThreeTen/threetenbp). To avoid 
-[issues on Android](https://github.com/JakeWharton/ThreeTenABP#why-not-use-threetenbp) you should exclude this 
-dependency and include [ThreeTenABP](https://github.com/JakeWharton/ThreeTenABP) instead:
-
-```groovy
-implementation ('com.uwetrottmann.trakt5:trakt-java:<latest-version>') {
-  exclude group: 'org.threeten', module: 'threetenbp'
-}
-implementation 'com.jakewharton.threetenabp:threetenabp:<latest-version>'
-```
+This library ships Java 8 bytecode and Java Time APIs. This requires Android Gradle Plugin 4.x.x or newer.
 
 ### Example
 
@@ -50,28 +39,19 @@ Use like any other retrofit2 based service. You only need to supply your
 [OAuth 2.0](https://www.digitalocean.com/community/tutorials/an-introduction-to-oauth-2) credentials and optional user
 OAuth access token obtained from trakt.
 
-`TraktV2` provides some helper methods to handle the OAuth 2.0 flow.
+`Trakt` provides some helper methods to handle the OAuth 2.0 flow.
 
-```java
-TraktV2 trakt = new TraktV2("api_key");
-Shows traktShows = trakt.shows();
+```kotlin
+val trakt = Trakt("api_key")
+val traktShows = trakt.shows()
 try {
     // Get trending shows
-    Response<List<TrendingShow>> response = traktShows.trending(1, null, Extended.FULL).execute();
-    if (response.isSuccessful()) {
-        List<TrendingShow> shows = response.body();
-        for (TrendingShow trending : shows) {
-            System.out.println("Title: " + trending.show.title);
-        }
-    } else {
-        if (response.code() == 401) {
-            // authorization required, supply a valid OAuth access token
-        } else {
-            // the request failed for some other reason
-        }
+    val trendingShows = traktShows.trending(page = 1, extended = Extended.FULL)
+    for (trending in trendingShows) {
+        println("Title: ${trending.show.title}")
     }
-} catch (Exception e) {
-    // see execute() javadoc 
+} catch (e: Exception) {
+    // handle exception
 }
 ```
 
@@ -84,7 +64,7 @@ Just apply the [Proguard rules for retrofit](https://square.github.io/retrofit/#
 ## License
 Created by [Uwe Trottmann](https://uwetrottmann.com).
 
-See full [list of contributors](https://github.com/UweTrottmann/trakt-java/graphs/contributors).
+See full [list of contributors](https://github.com/IliasRedissi/trakt-kotlin/graphs/contributors).
 
 Except where noted otherwise, released into the [public domain](UNLICENSE).
 Do not just copy, make it better.
