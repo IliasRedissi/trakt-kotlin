@@ -17,11 +17,11 @@ sourceSets {
 }
 
 test {
-    systemProperty "TRAKT_CLIENT_ID", project.getProperty("TRAKT_CLIENT_ID")
-    systemProperty "TRAKT_CLIENT_SECRET", project.getProperty("TRAKT_CLIENT_SECRET")
-    systemProperty "TRAKT_ACCESS_TOKEN", project.getProperty("TRAKT_ACCESS_TOKEN")
-    systemProperty "TRAKT_AUTH_CODE", project.getProperty("TRAKT_AUTH_CODE")
-    systemProperty "TRAKT_REFRESH_TOKEN", project.getProperty("TRAKT_REFRESH_TOKEN")
+    systemProperty "TRAKT_CLIENT_ID", project.hasProperty("TRAKT_CLIENT_ID") ? TRAKT_CLIENT_ID : System.getenv("TRAKT_CLIENT_ID")
+    systemProperty "TRAKT_CLIENT_SECRET", project.hasProperty("TRAKT_CLIENT_SECRET") ? TRAKT_CLIENT_SECRET : System.getenv("TRAKT_CLIENT_SECRET")
+    systemProperty "TRAKT_ACCESS_TOKEN", project.hasProperty("TRAKT_ACCESS_TOKEN") ? TRAKT_ACCESS_TOKEN : System.getenv("TRAKT_ACCESS_TOKEN")
+    systemProperty "TRAKT_AUTH_CODE", project.hasProperty("TRAKT_AUTH_CODE") ? TRAKT_AUTH_CODE : System.getenv("TRAKT_AUTH_CODE")
+    systemProperty "TRAKT_REFRESH_TOKEN", project.hasProperty("TRAKT_REFRESH_TOKEN") ? TRAKT_REFRESH_TOKEN : System.getenv("TRAKT_REFRESH_TOKEN")
 }
 
 dependencies {
