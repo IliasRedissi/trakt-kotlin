@@ -61,9 +61,57 @@ interface Shows {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
+    @GET("shows/played")
+    suspend fun mostPlayed(
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("networks") networks: String? = null,
+        @Query("status") status: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostShow>?
+
+    /**
+     * Returns the most played (a single user can watch multiple episodes multiple times) shows
+     * in the specified time period, defaulting to weekly. All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
     @GET("shows/played/{period}")
     suspend fun mostPlayed(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("networks") networks: String? = null,
+        @Query("status") status: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostShow>?
+
+    /**
+     * Returns the most watched (unique users) shows in the specified time period, defaulting to weekly.
+     * All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/watched")
+    suspend fun mostWatched(
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -88,7 +136,31 @@ interface Shows {
      */
     @GET("shows/watched/{period}")
     suspend fun mostWatched(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("networks") networks: String? = null,
+        @Query("status") status: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostShow>?
+
+    /**
+     * Returns the most collected (unique users) shows in the specified time period, defaulting to weekly.
+     * All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/collected")
+    suspend fun mostCollected(
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -113,7 +185,7 @@ interface Shows {
      */
     @GET("shows/collected/{period}")
     suspend fun mostCollected(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -159,9 +231,23 @@ interface Shows {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
+    @GET("shows/updates")
+    suspend fun recentlyUpdated(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<UpdatedShow>?
+
+    /**
+     * Returns all shows updated since the specified UTC date.
+     * We recommended storing the date you can be efficient using this method moving forward.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
     @GET("shows/updates/{start_date}")
     suspend fun recentlyUpdated(
-        @Path("start_date") startDate: LocalDate? = null,
+        @Path("start_date") startDate: LocalDate,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -217,14 +303,59 @@ interface Shows {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("shows/{id}/comments/{sort}")
+    @GET("shows/{id}/comments")
     suspend fun comments(
         @Path("id") showId: String?,
-        @Path("sort") sort: CommentSort? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Comment>?
+
+    /**
+     * Returns all top level comments for a show. Most recent comments returned first.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/comments/{sort}")
+    suspend fun comments(
+        @Path("id") showId: String?,
+        @Path("sort") sort: CommentSort,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<Comment>?
+
+    /**
+     * Returns all lists that contain this show. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/lists")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this show. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param type Filter for a specific list type.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/lists/{type}")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Path("type") type: ListType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
 
     /**
      * Returns all lists that contain this show. By default, personal lists are returned sorted by the most popular.
@@ -238,8 +369,8 @@ interface Shows {
     @GET("shows/{id}/lists/{type}/{sort}")
     suspend fun lists(
         @Path("id") showId: String,
-        @Path("type") type: ListType? = null,
-        @Path("sort") sort: ListSort? = null,
+        @Path("type") type: ListType,
+        @Path("sort") sort: ListSort,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<TraktList>?

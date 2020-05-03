@@ -125,7 +125,7 @@ class CommentsTest : BaseTestCase(), TestResponse, TestMovie {
     @Test
     fun `get show item`() = runBlocking<Unit> {
         val comment = Comment.build(
-            buildTestMovie(),
+            buildTestShow(),
             "This is a toasty comment!",
             spoiler = true,
             review = false
@@ -333,11 +333,11 @@ class CommentsTest : BaseTestCase(), TestResponse, TestMovie {
         }
 
         private fun buildTestSeason(): Season {
-            return Season(ids = SeasonIds(tmdb = TestData.SEASON_TRAKT_ID))
+            return Season(ids = SeasonIds(trakt = TestData.SEASON_TRAKT_ID))
         }
 
         private fun buildTestList(): TraktList {
-            return TraktList(ids = ListIds(trakt = TestData.SHOW_TMDB_ID))
+            return TraktList(ids = ListIds(trakt = TestData.LIST_TRAKT_ID))
         }
     }
 }

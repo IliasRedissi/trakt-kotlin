@@ -46,7 +46,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get user's collected movies`() = runBlocking {
-        val movies = trakt.users().collectionMovies(TestData.USER_SLUG, null)
+        val movies = trakt.users().collectionMovies(TestData.USER_SLUG)
         movies.shouldNotBeNull()
         assertSyncMovies(movies, "collection")
     }
@@ -54,7 +54,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get user's collected shows`() = runBlocking {
-        val shows = trakt.users().collectionShows(TestData.USER_SLUG, null)
+        val shows = trakt.users().collectionShows(TestData.USER_SLUG)
         shows.shouldNotBeNull()
         assertSyncShows(shows, "collection")
     }
@@ -126,7 +126,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get a list`() = runBlocking {
-        val entries = trakt.users().listItems(UserSlug.ME, TEST_LIST_WITH_ITEMS_TRAKT_ID.toString(), null)
+        val entries = trakt.users().listItems(UserSlug.ME, TEST_LIST_WITH_ITEMS_TRAKT_ID.toString())
         entries.shouldNotBeNull()
         for (entry in entries) {
             entry.listedAt.shouldNotBeNull()
@@ -166,7 +166,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `reorder a list`() = runBlocking<Unit> {
-        val entries = trakt.users().listItems(UserSlug.ME, TEST_LIST_WITH_ITEMS_TRAKT_ID.toString(), null)
+        val entries = trakt.users().listItems(UserSlug.ME, TEST_LIST_WITH_ITEMS_TRAKT_ID.toString())
         entries.shouldNotBeNull()
         // reverse order
         val newRank: MutableList<Long> = ArrayList()
@@ -204,7 +204,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get user's followers`() = runBlocking {
-        val followers = trakt.users().followers(TestData.USER_SLUG, null)
+        val followers = trakt.users().followers(TestData.USER_SLUG)
         followers.shouldNotBeNull()
         for (follower in followers) {
             follower.followedAt.shouldNotBeNull()
@@ -215,7 +215,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get following users`() = runBlocking {
-        val following = trakt.users().following(TestData.USER_SLUG, null)
+        val following = trakt.users().following(TestData.USER_SLUG)
         following.shouldNotBeNull()
         for (follower in following) {
             follower.followedAt.shouldNotBeNull()
@@ -226,7 +226,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get user's friends`() = runBlocking {
-        val friends = trakt.users().friends(TestData.USER_SLUG, null)
+        val friends = trakt.users().friends(TestData.USER_SLUG)
         friends.shouldNotBeNull()
         for (friend in friends) {
             friend.friendsAt.shouldNotBeNull()
@@ -240,10 +240,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
         val history = trakt.users().history(
             TestData.USER_SLUG,
             1,
-            DEFAULT_PAGE_SIZE,
-            null,
-            null,
-            null
+            DEFAULT_PAGE_SIZE
         )
         history.shouldNotBeNull()
         for (entry in history) {
@@ -267,10 +264,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
             TestData.USER_SLUG,
             HistoryType.EPISODES,
             1,
-            DEFAULT_PAGE_SIZE,
-            null,
-            null,
-            null
+            DEFAULT_PAGE_SIZE
         )
         history.shouldNotBeNull()
         for (entry in history) {
@@ -293,10 +287,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
             UserSlug.ME,
             HistoryType.MOVIES,
             1,
-            DEFAULT_PAGE_SIZE,
-            null,
-            null,
-            null
+            DEFAULT_PAGE_SIZE
         )
         history.shouldNotBeNull()
         assertMovieHistory(history)
@@ -311,9 +302,8 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
             TestData.MOVIE_WATCHED_TRAKT_ID,
             1,
             DEFAULT_PAGE_SIZE,
-            null,
-            OffsetDateTime.of(2016, 8, 3, 9, 0, 0, 0, ZoneOffset.UTC),
-            OffsetDateTime.of(2016, 8, 3, 10, 0, 0, 0, ZoneOffset.UTC)
+            startAt = OffsetDateTime.of(2016, 8, 3, 9, 0, 0, 0, ZoneOffset.UTC),
+            endAt = OffsetDateTime.of(2016, 8, 3, 10, 0, 0, 0, ZoneOffset.UTC)
         )
         history.shouldNotBeNull()
         history.size.shouldBeGreaterThan(0)
@@ -333,7 +323,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Throws(IOException::class)
     fun `get rated movies`() = runBlocking {
         val ratedMovies = trakt.users()
-            .ratingsMovies(TestData.USER_SLUG, RatingsFilter.ALL, null)
+            .ratingsMovies(TestData.USER_SLUG, RatingsFilter.ALL)
         ratedMovies.shouldNotBeNull()
         assertRatedEntities(ratedMovies)
     }
@@ -343,8 +333,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     fun `get rated movies with a filter`() = runBlocking {
         val ratedMovies = trakt.users().ratingsMovies(
             TestData.USER_SLUG,
-            RatingsFilter.TOTALLYNINJA,
-            null
+            RatingsFilter.TOTALLYNINJA
         )
         ratedMovies.shouldNotBeNull()
         for (movie in ratedMovies) {
@@ -357,7 +346,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Throws(IOException::class)
     fun `get rated shows`() = runBlocking {
         val ratedShows = trakt.users()
-            .ratingsShows(TestData.USER_SLUG, RatingsFilter.ALL, null)
+            .ratingsShows(TestData.USER_SLUG, RatingsFilter.ALL)
         ratedShows.shouldNotBeNull()
         assertRatedEntities(ratedShows)
     }
@@ -365,7 +354,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get rated seasons`() = runBlocking {
-        val ratedSeasons = trakt.users().ratingsSeasons(TestData.USER_SLUG, RatingsFilter.ALL, null)
+        val ratedSeasons = trakt.users().ratingsSeasons(TestData.USER_SLUG, RatingsFilter.ALL)
         ratedSeasons.shouldNotBeNull()
         assertRatedEntities(ratedSeasons)
     }
@@ -373,7 +362,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get rated episodes`() = runBlocking {
-        val ratedEpisodes = trakt.users().ratingsEpisodes(TestData.USER_SLUG, RatingsFilter.ALL, null)
+        val ratedEpisodes = trakt.users().ratingsEpisodes(TestData.USER_SLUG, RatingsFilter.ALL)
         ratedEpisodes.shouldNotBeNull()
         assertRatedEntities(ratedEpisodes)
     }
@@ -381,7 +370,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get movies in watchlist`() = runBlocking {
-        val movies = trakt.users().watchlistMovies(UserSlug.ME, null)
+        val movies = trakt.users().watchlistMovies(UserSlug.ME)
         movies.shouldNotBeNull()
         assertSyncMovies(movies, "watchlist")
     }
@@ -389,7 +378,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get shows in watchlist`() = runBlocking {
-        val shows = trakt.users().watchlistShows(UserSlug.ME, null)
+        val shows = trakt.users().watchlistShows(UserSlug.ME)
         shows.shouldNotBeNull()
         for (show in shows) {
             show.show.shouldNotBeNull()
@@ -400,7 +389,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get seasons in watchlist`() = runBlocking {
-        val seasons = trakt.users().watchlistSeasons(UserSlug.ME, null)
+        val seasons = trakt.users().watchlistSeasons(UserSlug.ME)
         seasons.shouldNotBeNull()
         for (season in seasons) {
             season.season.shouldNotBeNull()
@@ -412,7 +401,7 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get episodes in watchlist`() = runBlocking {
-        val episodes = trakt.users().watchlistEpisodes(UserSlug.ME, null)
+        val episodes = trakt.users().watchlistEpisodes(UserSlug.ME)
         episodes.shouldNotBeNull()
         for (episode in episodes) {
             episode.episode.shouldNotBeNull()
@@ -424,14 +413,14 @@ class UsersTest : BaseTestCase(), TestSync, TestResponse, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watched movies`() = runBlocking {
-        val watchedMovies = trakt.users().watchedMovies(TestData.USER_SLUG, null)
+        val watchedMovies = trakt.users().watchedMovies(TestData.USER_SLUG)
         assertSyncMovies(watchedMovies!!, "watched")
     }
 
     @Test
     @Throws(IOException::class)
     fun `get watched shows`() = runBlocking {
-        val watchedShows = trakt.users().watchedShows(TestData.USER_SLUG, null)
+        val watchedShows = trakt.users().watchedShows(TestData.USER_SLUG)
         assertSyncShows(watchedShows!!, "watched")
     }
 

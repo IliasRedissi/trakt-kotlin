@@ -143,13 +143,31 @@ interface Sync {
      * Returns movies and episodes that a user has watched, sorted by most recent.
      * You can optionally limit the type to movies, shows, seasons or episodes.
      *
+     * @param startAt Starting date.
+     * @param endAt Ending date.
+     */
+    @GET("sync/history")
+    suspend fun history(
+        @Query("start_at") startAt: OffsetDateTime? = null,
+        @Query("end_at") endAt: OffsetDateTime? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<HistoryEntry>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     * Returns movies and episodes that a user has watched, sorted by most recent.
+     * You can optionally limit the type to movies, shows, seasons or episodes.
+     *
      * @param type Possible values:  movies, shows, seasons, episodes.
      * @param startAt Starting date.
      * @param endAt Ending date.
      */
     @GET("sync/history/{type}")
     suspend fun history(
-        @Path("type") type: String? = null,
+        @Path("type") type: String,
         @Query("start_at") startAt: OffsetDateTime? = null,
         @Query("end_at") endAt: OffsetDateTime? = null,
         @Query("page") page: Int? = null,
@@ -311,13 +329,41 @@ interface Sync {
      *  Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
-    @GET("sync/watchlist/movies/{sort}")
+    @GET("sync/watchlist/movies")
     suspend fun watchlistMovies(
-        @Path("sort") sort: SortBy? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseMovie>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
+     * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
+    @GET("sync/watchlist/movies/{sort}")
+    suspend fun watchlistMovies(
+        @Path("sort") sort: SortBy,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<BaseMovie>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns all items in a user's watchlist filtered by shows. When an item is watched, it will be automatically
+     * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
+    @GET("sync/watchlist/shows")
+    suspend fun watchlistShows(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<BaseShow>?
 
     /**
      * **OAuth Required**
@@ -328,11 +374,25 @@ interface Sync {
      */
     @GET("sync/watchlist/shows/{sort}")
     suspend fun watchlistShows(
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<BaseShow>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns all items in a user's watchlist filtered by seasons. When an item is watched, it will be
+     * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
+    @GET("sync/watchlist/seasons")
+    suspend fun watchlistSeasons(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<WatchlistedSeason>?
 
     /**
      * **OAuth Required**
@@ -343,11 +403,25 @@ interface Sync {
      */
     @GET("sync/watchlist/seasons/{sort}")
     suspend fun watchlistSeasons(
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<WatchlistedSeason>?
+
+    /**
+     * **OAuth Required**
+     *
+     *
+     *  Returns all items in a user's watchlist filtered by episodes. When an item is watched, it will be
+     * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
+    @GET("sync/watchlist/episodes")
+    suspend fun watchlistEpisodes(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<WatchlistedEpisode>?
 
     /**
      * **OAuth Required**
@@ -358,10 +432,10 @@ interface Sync {
      */
     @GET("sync/watchlist/episodes/{sort}")
     suspend fun watchlistEpisodes(
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<WatchlistedEpisode>?
 
     /**

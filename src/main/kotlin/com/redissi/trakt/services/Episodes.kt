@@ -23,6 +23,20 @@ interface Episodes {
         @Path("episode") episode: Int,
         @Query(value = "extended", encoded = true) extended: Extended? = null
     ): Episode?
+
+    /**
+     * Returns all translations for an episode, including language and translated values for title and overview.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param episode Episode number.
+     */
+    @GET("shows/{id}/seasons/{season}/episodes/{episode}/translations")
+    suspend fun translations(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Path("episode") episode: Int
+    ): List<Translation>?
     /**
      * Returns all translations for an episode, including language and translated values for title and overview.
      *
@@ -36,7 +50,7 @@ interface Episodes {
         @Path("id") showId: String,
         @Path("season") season: Int,
         @Path("episode") episode: Int,
-        @Path("language") language: String? = null
+        @Path("language") language: String
     ): List<Translation>?
 
     /**
@@ -64,6 +78,44 @@ interface Episodes {
      * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
      * @param season Season number.
      * @param episode Episode number.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/seasons/{season}/episodes/{episode}/lists")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Path("episode") episode: Int,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this episode. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param episode Episode number.
+     * @param type Filter for a specific list type.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/seasons/{season}/episodes/{episode}/lists/{type}")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Path("episode") episode: Int,
+        @Path("type") type: ListType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this episode. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param episode Episode number.
      * @param type Filter for a specific list type.
      * @param sort How to sort.
      * @param page Number of page of results to be returned. If `null` defaults to 1.
@@ -74,8 +126,8 @@ interface Episodes {
         @Path("id") showId: String,
         @Path("season") season: Int,
         @Path("episode") episode: Int,
-        @Path("type") type: ListType? = null,
-        @Path("sort") sort: ListSort? = null,
+        @Path("type") type: ListType,
+        @Path("sort") sort: ListSort,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<TraktList>?

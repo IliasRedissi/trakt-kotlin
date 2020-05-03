@@ -179,6 +179,24 @@ interface Comments {
      *  Returns all comments with the most likes and replies over the last 7 days.
      *
      * @param commentType Filter by comment type. Example: reviews
+     * @param includeReplies Include comment replies
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     * @param extended Request a different extended level of information.
+     */
+    @GET("comments/trending/{comment_type}/{type}")
+    suspend fun trending(
+        @Path("comment_type") commentType: CommentType,
+        @Query("include_replies") includeReplies: Boolean? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("extended", encoded = true) extended: Extended? = null
+    ): List<ListComment>
+
+    /**
+     *  Returns all comments with the most likes and replies over the last 7 days.
+     *
+     * @param commentType Filter by comment type. Example: reviews
      * @param type Filter by media type. Example: movies
      * @param includeReplies Include comment replies
      * @param page Number of page of results to be returned. If `null` defaults to 1.
@@ -188,7 +206,7 @@ interface Comments {
     @GET("comments/trending/{comment_type}/{type}")
     suspend fun trending(
         @Path("comment_type") commentType: CommentType,
-        @Path("type") type: Types? = null,
+        @Path("type") type: Types,
         @Query("include_replies") includeReplies: Boolean? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
@@ -215,6 +233,24 @@ interface Comments {
      *  Returns the most recently written comments across all of Trakt.
      *
      * @param commentType Filter by comment type. Example: reviews
+     * @param includeReplies Include comment replies
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     * @param extended Request a different extended level of information.
+     */
+    @GET("comments/trending/{comment_type}")
+    suspend fun recentlyCreated(
+        @Path("comment_type") commentType: CommentType,
+        @Query("include_replies") includeReplies: Boolean? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("extended", encoded = true) extended: Extended? = null
+    ): List<ListComment>
+
+    /**
+     *  Returns the most recently written comments across all of Trakt.
+     *
+     * @param commentType Filter by comment type. Example: reviews
      * @param type Filter by media type. Example: movies
      * @param includeReplies Include comment replies
      * @param page Number of page of results to be returned. If `null` defaults to 1.
@@ -224,7 +260,7 @@ interface Comments {
     @GET("comments/trending/{comment_type}/{type}")
     suspend fun recentlyCreated(
         @Path("comment_type") commentType: CommentType,
-        @Path("type") type: Types? = null,
+        @Path("type") type: Types,
         @Query("include_replies") includeReplies: Boolean? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
@@ -251,6 +287,24 @@ interface Comments {
      *  Returns the most recently updated comments across all of Trakt.
      *
      * @param commentType Filter by comment type. Example: reviews
+     * @param includeReplies Include comment replies
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     * @param extended Request a different extended level of information.
+     */
+    @GET("comments/trending/{comment_type}")
+    suspend fun recentlyUpdated(
+        @Path("comment_type") commentType: CommentType,
+        @Query("include_replies") includeReplies: Boolean? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("extended", encoded = true) extended: Extended? = null
+    ): List<ListComment>
+
+    /**
+     *  Returns the most recently updated comments across all of Trakt.
+     *
+     * @param commentType Filter by comment type. Example: reviews
      * @param type Filter by media type. Example: movies
      * @param includeReplies Include comment replies
      * @param page Number of page of results to be returned. If `null` defaults to 1.
@@ -260,7 +314,7 @@ interface Comments {
     @GET("comments/trending/{comment_type}/{type}")
     suspend fun recentlyUpdated(
         @Path("comment_type") commentType: CommentType,
-        @Path("type") type: Types? = null,
+        @Path("type") type: Types,
         @Query("include_replies") includeReplies: Boolean? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,

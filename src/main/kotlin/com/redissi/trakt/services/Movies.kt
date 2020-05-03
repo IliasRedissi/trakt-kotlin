@@ -57,9 +57,53 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
+    @GET("movies/played")
+    suspend fun mostPlayed(
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostMovie>?
+
+    /**
+     * Returns the most played (a single user can watch multiple times) movies in the specified time `period`,
+     * defaulting to `weekly`. All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
     @GET("movies/played/{period}")
     suspend fun mostPlayed(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostMovie>?
+
+    /**
+     * Returns the most watched (unique users) movies in the specified time period, defaulting to weekly.
+     * All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("movies/watched")
+    suspend fun mostWatched(
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -82,7 +126,29 @@ interface Movies {
      */
     @GET("movies/watched/{period}")
     suspend fun mostWatched(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<MostMovie>?
+
+    /**
+     * Returns the most collected (unique users) movies in the specified time period, defaulting to weekly.
+     * All stats are relative to the specific time period.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("movies/collected")
+    suspend fun mostCollected(
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -105,7 +171,7 @@ interface Movies {
      */
     @GET("movies/collected/{period}")
     suspend fun mostCollected(
-        @Path("period") period: Period? = null,
+        @Path("period") period: Period,
         @Query("query") query: String? = null,
         @Query("years") years: String? = null,
         @Query("genres") genres: String? = null,
@@ -155,9 +221,23 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
+    @GET("movies/updates")
+    suspend fun recentlyUpdated(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<UpdatedMovie>?
+
+    /**
+     * Returns all movies updated since the specified UTC date.
+     * We recommended storing the date you can be efficient using this method moving forward.
+     *
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
     @GET("movies/updates/{start_date}")
     suspend fun recentlyUpdated(
-        @Path("start_date") startDate: LocalDate? = null,
+        @Path("start_date") startDate: LocalDate,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -188,12 +268,22 @@ interface Movies {
      * Returns all releases for a movie including country, certification, release date, release type, and note.
      *
      * @param movieId trakt ID, trakt slug, or IMDB ID. Example: "tron-legacy-2010".
+     */
+    @GET("movies/{id}/releases")
+    suspend fun releases(
+        @Path("id") movieId: String
+    ): List<MovieRelease>?
+
+    /**
+     * Returns all releases for a movie including country, certification, release date, release type, and note.
+     *
+     * @param movieId trakt ID, trakt slug, or IMDB ID. Example: "tron-legacy-2010".
      * @param country 2 character country code
      */
     @GET("movies/{id}/releases/{country}")
     suspend fun releases(
         @Path("id") movieId: String,
-        @Path("country") country: String? = null
+        @Path("country") country: String
     ): List<MovieRelease>?
 
     /**
@@ -225,14 +315,59 @@ interface Movies {
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
-    @GET("movies/{id}/comments/{sort}")
+    @GET("movies/{id}/comments")
     suspend fun comments(
         @Path("id") movieId: String,
-        @Path("sort") sort: CommentSort? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Comment>?
+
+    /**
+     * Returns all top level comments for a movie. Most recent comments returned first.
+     *
+     * @param movieId trakt ID, trakt slug, or IMDB ID. Example: "tron-legacy-2010".
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("movies/{id}/comments/{sort}")
+    suspend fun comments(
+        @Path("id") movieId: String,
+        @Path("sort") sort: CommentSort,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<Comment>?
+
+    /**
+     * Returns all lists that contain this movie. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param movieId trakt ID, trakt slug, or IMDB ID. Example: "tron-legacy-2010".
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("movies/{id}/lists")
+    suspend fun lists(
+        @Path("id") movieId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this movie. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param movieId trakt ID, trakt slug, or IMDB ID. Example: "tron-legacy-2010".
+     * @param type Filter for a specific list type.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("movies/{id}/lists/{type}")
+    suspend fun lists(
+        @Path("id") movieId: String,
+        @Path("type") type: ListType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
 
     /**
      * Returns all lists that contain this movie. By default, personal lists are returned sorted by the most popular.
@@ -246,8 +381,8 @@ interface Movies {
     @GET("movies/{id}/lists/{type}/{sort}")
     suspend fun lists(
         @Path("id") movieId: String,
-        @Path("type") type: ListType? = null,
-        @Path("sort") sort: ListSort? = null,
+        @Path("type") type: ListType,
+        @Path("sort") sort: ListSort,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<TraktList>?

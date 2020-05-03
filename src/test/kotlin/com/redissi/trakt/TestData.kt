@@ -43,4 +43,5 @@ object TestData {
     val USER_SLUG = UserSlug("sean")
     const val USER_REAL_NAME = "Sean Rudford"
     const val USER_TO_FOLLOW = "uwe"
+    const val LIST_TRAKT_ID = 60
 }

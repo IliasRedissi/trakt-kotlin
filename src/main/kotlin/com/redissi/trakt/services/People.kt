@@ -48,16 +48,46 @@ interface People {
      * Returns all lists that contain this person. By default, personal lists are returned sorted by the most popular.
      *
      * @param personId trakt ID, trakt slug, or IMDB ID Example: bryan-cranston.
-     * @param type Filter for a specific list type.
-     * @param sort How to sort.
      * @param page Number of page of results to be returned. If `null` defaults to 1.
      * @param limit Number of results to return per page. If `null` defaults to 10.
      */
     @GET("people/{id}/lists")
     suspend fun lists(
         @Path("id") personId: String,
-        @Path("type") type: ListType? = null,
-        @Path("sort") sort: ListSort? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this person. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param personId trakt ID, trakt slug, or IMDB ID Example: bryan-cranston.
+     * @param type Filter for a specific list type.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("people/{id}/lists/{type}")
+    suspend fun lists(
+        @Path("id") personId: String,
+        @Path("type") type: ListType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this person. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param personId trakt ID, trakt slug, or IMDB ID Example: bryan-cranston.
+     * @param type Filter for a specific list type.
+     * @param sort How to sort.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("people/{id}/lists/{type}/{sort}")
+    suspend fun lists(
+        @Path("id") personId: String,
+        @Path("type") type: ListType,
+        @Path("sort") sort: ListSort,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<TraktList>?

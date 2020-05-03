@@ -98,9 +98,20 @@ interface Users {
      *
      * Get items a user likes.
      */
+    @GET("users/likes")
+    suspend fun likes(
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<LikedItem>?
+
+    /**
+     * **OAuth Required**
+     *
+     * Get items a user likes.
+     */
     @GET("users/likes/{type}")
     suspend fun likes(
-        @Path("type") type: String? = null,
+        @Path("type") type: String,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<LikedItem>?
@@ -158,11 +169,27 @@ interface Users {
      * @param includeReplies Set to `true` to return replies in addition to top level comments.
      *  Set to `only` to return only replies and no top level comments.
      */
+    @GET("users/{username}/comments/{commentType}")
+    suspend fun comments(
+        @Path("username") userSlug: UserSlug,
+        @Path("commentType") commentType: String = "all",
+        @Query("include_replies") includeReplies: String? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<ListComment>
+
+    /**
+     * **OAuth Optional**
+     *
+     * Returns the most recently written comments for the user.
+     *
+     * @param includeReplies Set to `true` to return replies in addition to top level comments.
+     *  Set to `only` to return only replies and no top level comments.
+     */
     @GET("users/{username}/comments/{commentType}/{type}")
     suspend fun comments(
         @Path("username") userSlug: UserSlug,
         @Path("commentType") commentType: String = "all",
-        @Path("type") type: String? = null,
+        @Path("type") type: String,
         @Query("include_replies") includeReplies: String? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<ListComment>
@@ -270,7 +297,7 @@ interface Users {
     suspend fun listItems(
         @Path("username") userSlug: UserSlug,
         @Path("id") id: String,
-        @Path("type") type: String? = null,
+        @Path("type") type: String = "",
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -318,11 +345,22 @@ interface Users {
     /**
      * Returns all top level comments for a list.
      */
+    @GET("users/{username}/lists/{id}/comments")
+    suspend fun listComments(
+        @Path("username") userSlug: UserSlug,
+        @Path("id") id: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<Comment>?
+
+    /**
+     * Returns all top level comments for a list.
+     */
     @GET("users/{username}/lists/{id}/comments/{sort}")
     suspend fun listComments(
         @Path("username") userSlug: UserSlug,
         @Path("id") id: String,
-        @Path("sort") sort: String? = null,
+        @Path("sort") sort: String,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<Comment>?
@@ -541,10 +579,25 @@ interface Users {
      * Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
+    @GET("users/{username}/watchlist/movies")
+    suspend fun watchlistMovies(
+        @Path("username") userSlug: UserSlug,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<BaseMovie>?
+
+    /**
+     * **OAuth Optional**
+     *
+     *
+     * Returns all items in a user's watchlist filtered by movies. When an item is watched, it will be automatically
+     * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
     @GET("users/{username}/watchlist/movies/{sort}")
     suspend fun watchlistMovies(
         @Path("username") userSlug: UserSlug,
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -557,10 +610,25 @@ interface Users {
      * Returns all items in a user's watchlist filtered by shows. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
+    @GET("users/{username}/watchlist/shows")
+    suspend fun watchlistShows(
+        @Path("username") userSlug: UserSlug,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<BaseShow>?
+
+    /**
+     * **OAuth Optional**
+     *
+     *
+     * Returns all items in a user's watchlist filtered by shows. When an item is watched, it will be automatically
+     * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
     @GET("users/{username}/watchlist/shows/{sort}")
     suspend fun watchlistShows(
         @Path("username") userSlug: UserSlug,
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -573,10 +641,25 @@ interface Users {
      * Returns all items in a user's watchlist filtered by seasons. When an item is watched, it will be automatically
      * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
+    @GET("users/{username}/watchlist/seasons")
+    suspend fun watchlistSeasons(
+        @Path("username") userSlug: UserSlug,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<WatchlistedSeason>?
+
+    /**
+     * **OAuth Optional**
+     *
+     *
+     * Returns all items in a user's watchlist filtered by seasons. When an item is watched, it will be automatically
+     * removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
     @GET("users/{username}/watchlist/seasons/{sort}")
     suspend fun watchlistSeasons(
         @Path("username") userSlug: UserSlug,
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null
@@ -589,10 +672,25 @@ interface Users {
      * Returns all items in a user's watchlist filtered by episodes. When an item is watched, it will be
      * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
      */
+    @GET("users/{username}/watchlist/episodes")
+    suspend fun watchlistEpisodes(
+        @Path("username") userSlug: UserSlug,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
+    ): List<WatchlistedEpisode>?
+
+    /**
+     * **OAuth Optional**
+     *
+     *
+     * Returns all items in a user's watchlist filtered by episodes. When an item is watched, it will be
+     * automatically removed from the watchlist. To track what the user is actively watching, use the progress APIs.
+     */
     @GET("users/{username}/watchlist/episodes/{sort}")
     suspend fun watchlistEpisodes(
         @Path("username") userSlug: UserSlug,
-        @Path("sort") sort: SortBy? = null,
+        @Path("sort") sort: SortBy,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null,
         @Query(value = "extended", encoded = true) extended: Extended? = null

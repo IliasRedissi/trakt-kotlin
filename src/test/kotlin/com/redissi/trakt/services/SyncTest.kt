@@ -108,7 +108,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get collected movies`() = runBlocking {
-        val movies = trakt.sync().collectionMovies(null)
+        val movies = trakt.sync().collectionMovies()
         movies.shouldNotBeNull()
         assertSyncMovies(movies, "collection")
     }
@@ -116,7 +116,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get collected shows`() = runBlocking {
-        val shows = trakt.sync().collectionShows(null)
+        val shows = trakt.sync().collectionShows()
         shows.shouldNotBeNull()
         assertSyncShows(shows, "collection")
     }
@@ -226,7 +226,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watched movies`() = runBlocking {
-        val watchedMovies = trakt.sync().watchedMovies(null)
+        val watchedMovies = trakt.sync().watchedMovies()
         watchedMovies.shouldNotBeNull()
         assertSyncMovies(watchedMovies, "watched")
     }
@@ -234,7 +234,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watched shows`() = runBlocking {
-        val watchedShows = trakt.sync().watchedShows(null)
+        val watchedShows = trakt.sync().watchedShows()
         watchedShows.shouldNotBeNull()
         assertSyncShows(watchedShows, "watched")
     }
@@ -294,7 +294,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get all rated movies`() = runBlocking {
-        val ratedMovies = trakt.sync().ratingsMovies(RatingsFilter.ALL, null)
+        val ratedMovies = trakt.sync().ratingsMovies(RatingsFilter.ALL)
         ratedMovies.shouldNotBeNull()
         assertRatedEntities(ratedMovies)
     }
@@ -302,7 +302,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get filtered rated movies`() = runBlocking {
-        val ratedMovies = trakt.sync().ratingsMovies(RatingsFilter.TOTALLYNINJA, null)
+        val ratedMovies = trakt.sync().ratingsMovies(RatingsFilter.TOTALLYNINJA)
         ratedMovies.shouldNotBeNull()
         for (movie in ratedMovies) {
             movie.ratedAt.shouldNotBeNull()
@@ -313,7 +313,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get all rated shows`() = runBlocking {
-        val ratedShows = trakt.sync().ratingsShows(RatingsFilter.ALL, null)
+        val ratedShows = trakt.sync().ratingsShows(RatingsFilter.ALL)
         ratedShows.shouldNotBeNull()
         assertRatedEntities(ratedShows)
     }
@@ -321,7 +321,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get all rated seasons`() = runBlocking {
-        val ratedSeasons = trakt.sync().ratingsSeasons(RatingsFilter.ALL, null)
+        val ratedSeasons = trakt.sync().ratingsSeasons(RatingsFilter.ALL)
         ratedSeasons.shouldNotBeNull()
         assertRatedEntities(ratedSeasons)
     }
@@ -329,7 +329,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get rated episodes`() = runBlocking {
-        val ratedEpisodes = trakt.sync().ratingsEpisodes(RatingsFilter.ALL, null)
+        val ratedEpisodes = trakt.sync().ratingsEpisodes(RatingsFilter.ALL)
         ratedEpisodes.shouldNotBeNull()
         assertRatedEntities(ratedEpisodes)
     }
@@ -388,7 +388,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watchlisted movies`() = runBlocking {
-        val movies = trakt.sync().watchlistMovies(null)
+        val movies = trakt.sync().watchlistMovies()
         movies.shouldNotBeNull()
         assertSyncMovies(movies, "watchlist")
     }
@@ -396,7 +396,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watchlisted shows`() = runBlocking {
-        val baseShows = trakt.sync().watchlistShows(null)
+        val baseShows = trakt.sync().watchlistShows()
         baseShows.shouldNotBeNull()
         for (baseShow in baseShows) {
             baseShow.show.shouldNotBeNull()
@@ -407,7 +407,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watchlisted seasons`() = runBlocking {
-        val watchlistedSeasons =  trakt.sync().watchlistSeasons(null)
+        val watchlistedSeasons =  trakt.sync().watchlistSeasons()
         watchlistedSeasons.shouldNotBeNull()
         for (watchlistedSeason in watchlistedSeasons) {
             watchlistedSeason.season.shouldNotBeNull()
@@ -419,7 +419,7 @@ class SyncTest : BaseTestCase(), TestSync, TestRatedEntities {
     @Test
     @Throws(IOException::class)
     fun `get watchlisted episodes`() = runBlocking {
-        val watchlistedEpisodes = trakt.sync().watchlistEpisodes(null)
+        val watchlistedEpisodes = trakt.sync().watchlistEpisodes()
         watchlistedEpisodes.shouldNotBeNull()
         for (watchlistedEpisode in watchlistedEpisodes) {
             watchlistedEpisode.episode.shouldNotBeNull()

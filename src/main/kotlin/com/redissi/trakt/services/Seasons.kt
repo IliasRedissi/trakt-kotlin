@@ -49,10 +49,60 @@ interface Seasons {
     suspend fun comments(
         @Path("id") showId: String,
         @Path("season") season: Int,
-        @Path("sort") sort: CommentSort? = null,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<Comment>?
+
+    /**
+     * Returns all top level comments for a season. Most recent comments returned first.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/seasons/{season}/comments/{sort}")
+    suspend fun comments(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Path("sort") sort: CommentSort,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<Comment>?
+
+    /**
+     * Returns all lists that contain this season. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/seasons/{season}/lists/{type}/{sort}")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
+
+    /**
+     * Returns all lists that contain this season. By default, personal lists are returned sorted by the most popular.
+     *
+     * @param showId trakt ID, trakt slug, or IMDB ID. Example: "game-of-thrones".
+     * @param season Season number.
+     * @param type Filter for a specific list type.
+     * @param page Number of page of results to be returned. If `null` defaults to 1.
+     * @param limit Number of results to return per page. If `null` defaults to 10.
+     */
+    @GET("shows/{id}/seasons/{season}/lists/{type}")
+    suspend fun lists(
+        @Path("id") showId: String,
+        @Path("season") season: Int,
+        @Path("type") type: ListType,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
+    ): List<TraktList>?
 
     /**
      * Returns all lists that contain this season. By default, personal lists are returned sorted by the most popular.
@@ -68,8 +118,8 @@ interface Seasons {
     suspend fun lists(
         @Path("id") showId: String,
         @Path("season") season: Int,
-        @Path("type") type: ListType? = null,
-        @Path("sort") sort: ListSort? = null,
+        @Path("type") type: ListType,
+        @Path("sort") sort: ListSort,
         @Query("page") page: Int? = null,
         @Query("limit") limit: Int? = null
     ): List<TraktList>?
