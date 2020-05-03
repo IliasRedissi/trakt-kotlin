@@ -14,7 +14,7 @@ class ShowsTest : BaseTestCase(), TestCrew, TestShowStats, TestRatings, TestCast
     @Test
     @Throws(IOException::class)
     fun `get popular shows`() = runBlocking {
-        val shows = trakt.shows().popular(2, null, null)
+        val shows = trakt.shows().popular(page = 2)
         shows.shouldNotBeNull()
         shows.size.shouldBeLessOrEqualTo(DEFAULT_PAGE_SIZE)
         for (show in shows) {
@@ -25,7 +25,7 @@ class ShowsTest : BaseTestCase(), TestCrew, TestShowStats, TestRatings, TestCast
     @Test
     @Throws(IOException::class)
     fun `get trending shows`() = runBlocking {
-        val trendingShows = trakt.shows().trending(1, null, null)
+        val trendingShows = trakt.shows().trending()
         trendingShows.shouldNotBeNull()
         trendingShows.size.shouldBeLessOrEqualTo(DEFAULT_PAGE_SIZE)
         for (trendingShow in trendingShows) {
@@ -95,7 +95,7 @@ class ShowsTest : BaseTestCase(), TestCrew, TestShowStats, TestRatings, TestCast
     @Test
     @Throws(IOException::class)
     fun `get comments for a show`() = runBlocking<Unit> {
-        val comments = trakt.shows().comments(TestData.SHOW_SLUG, 1, null,null)
+        val comments = trakt.shows().comments(TestData.SHOW_SLUG)
         comments.shouldNotBeNull()
         comments.size.shouldBeLessOrEqualTo(DEFAULT_PAGE_SIZE)
     }

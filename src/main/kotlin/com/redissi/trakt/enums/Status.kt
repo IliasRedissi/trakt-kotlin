@@ -11,7 +11,9 @@ enum class Status(private val value: String) : TraktEnum {
     @Json(name = "canceled")
     CANCELED("canceled"),
     @Json(name = "in production")
-    IN_PRODUCTION("in production");
+    IN_PRODUCTION("in production"),
+    @Json(name = "planned")
+    PLANNED("planned");
 
     companion object {
         private val STRING_MAPPING: MutableMap<String, Status> = HashMap()

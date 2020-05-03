@@ -15,4 +15,5 @@ class SyncMovie(
     @Json(name = "rated_at")
     val ratedAt: OffsetDateTime? = null,
     val rating: Rating? = null
+    // TODO add media_type, resolution, hdr, audio, audio_channels, 3d fields
 )

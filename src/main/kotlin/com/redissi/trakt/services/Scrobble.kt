@@ -14,7 +14,7 @@ interface Scrobble {
      */
     @POST("scrobble/start")
     suspend fun startWatching(
-        @Body prog: ScrobbleProgress?
+        @Body prog: ScrobbleProgress
     ): PlaybackResponse?
 
     /**
@@ -25,7 +25,7 @@ interface Scrobble {
      */
     @POST("scrobble/pause")
     suspend fun pauseWatching(
-        @Body prog: ScrobbleProgress?
+        @Body prog: ScrobbleProgress
     ): PlaybackResponse?
 
     /**
@@ -36,6 +36,6 @@ interface Scrobble {
      */
     @POST("scrobble/stop")
     suspend fun stopWatching(
-        @Body prog: ScrobbleProgress?
+        @Body prog: ScrobbleProgress
     ): PlaybackResponse?
 }

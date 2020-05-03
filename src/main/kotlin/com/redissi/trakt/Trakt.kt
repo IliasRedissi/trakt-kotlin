@@ -227,6 +227,10 @@ open class Trakt(
         return retrofit.create(Checkin::class.java)
     }
 
+    fun certifications(): Certifications {
+        return retrofit.create(Certifications::class.java)
+    }
+
     /**
      * Comments are attached to any movie, show, season, episode, or list and can be shorter shouts or more in depth
      * reviews. Each comment can have replies and can be voted up or down. These votes are used to determine popular

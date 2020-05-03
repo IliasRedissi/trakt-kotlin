@@ -22,17 +22,17 @@ interface Search {
      */
     @GET("search/{type}")
     suspend fun textQuery(
-        @Path("type") type: Type?,
-        @Query("query") query: String?,
-        @Query("years") years: String?,
-        @Query("genres") genres: String?,
-        @Query("languages") languages: String?,
-        @Query("countries") countries: String?,
-        @Query("runtimes") runtimes: String?,
-        @Query("ratings") ratings: String?,
-        @Query("extended") extended: Extended?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?
+        @Path("type") type: Type,
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("extended") extended: Extended? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<SearchResult>?
 
     /**
@@ -40,17 +40,17 @@ interface Search {
      */
     @GET("search/movie")
     suspend fun textQueryMovie(
-        @Query("query") query: String?,
-        @Query("years") years: String?,
-        @Query("genres") genres: String?,
-        @Query("languages") languages: String?,
-        @Query("countries") countries: String?,
-        @Query("runtimes") runtimes: String?,
-        @Query("ratings") ratings: String?,
-        @Query("certifications") certifications: String?,
-        @Query("extended") extended: Extended?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("extended") extended: Extended? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<SearchResult>?
 
     /**
@@ -58,19 +58,19 @@ interface Search {
      */
     @GET("search/show")
     suspend fun textQueryShow(
-        @Query("query") query: String?,
-        @Query("years") years: String?,
-        @Query("genres") genres: String?,
-        @Query("languages") languages: String?,
-        @Query("countries") countries: String?,
-        @Query("runtimes") runtimes: String?,
-        @Query("ratings") ratings: String?,
-        @Query("certifications") certifications: String?,
-        @Query("networks") networks: String?,
-        @Query("status") status: String?,
-        @Query("extended") extended: Extended?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?
+        @Query("query") query: String? = null,
+        @Query("years") years: String? = null,
+        @Query("genres") genres: String? = null,
+        @Query("languages") languages: String? = null,
+        @Query("countries") countries: String? = null,
+        @Query("runtimes") runtimes: String? = null,
+        @Query("ratings") ratings: String? = null,
+        @Query("certifications") certifications: String? = null,
+        @Query("networks") networks: String? = null,
+        @Query("status") status: String? = null,
+        @Query("extended") extended: Extended? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<SearchResult>?
 
     /**
@@ -84,11 +84,11 @@ interface Search {
      */
     @GET("search/{id_type}/{id}")
     suspend fun idLookup(
-        @Path(value = "id_type", encoded = true) idType: IdType?,
-        @Path(value = "id", encoded = true) id: String?,
-        @Query("type") type: Type?,
-        @Query("extended") extended: Extended?,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?
+        @Path(value = "id_type", encoded = true) idType: IdType,
+        @Path(value = "id", encoded = true) id: String,
+        @Query("type") type: Type? = null,
+        @Query("extended") extended: Extended? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null
     ): List<SearchResult>?
 }

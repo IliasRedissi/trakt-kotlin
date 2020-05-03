@@ -21,9 +21,10 @@ interface Recommendations {
      */
     @GET("recommendations/movies")
     suspend fun movies(
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query("ignore_collected") ignoreCollected: Boolean? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Movie>?
 
     /**
@@ -36,7 +37,7 @@ interface Recommendations {
      */
     @DELETE("recommendations/movies/{id}")
     suspend fun dismissMovie(
-        @Path("id") movieId: String?
+        @Path("id") movieId: String
     ): Response<Unit>
 
     /**
@@ -50,9 +51,10 @@ interface Recommendations {
      */
     @GET("recommendations/shows")
     suspend fun shows(
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Query(value = "extended", encoded = true) extended: Extended?
+        @Query("ignore_collected") ignoreCollected: Boolean? = null,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query(value = "extended", encoded = true) extended: Extended? = null
     ): List<Show>?
 
     /**
@@ -65,6 +67,6 @@ interface Recommendations {
      */
     @DELETE("recommendations/shows/{id}")
     suspend fun dismissShow(
-        @Path("id") showId: String?
+        @Path("id") showId: String
     ): Response<Unit>
 }

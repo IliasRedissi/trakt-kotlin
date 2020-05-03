@@ -9,7 +9,7 @@ interface Calendars {
     /**
      * **OAuth Required**
      *
-     * @see .shows
+     * @see [shows]
      */
     @GET("calendars/my/shows/{startdate}/{days}")
     suspend fun myShows(
@@ -20,7 +20,7 @@ interface Calendars {
     /**
      * **OAuth Required**
      *
-     * @see .newShows
+     * @see [newShows]
      */
     @GET("calendars/my/shows/new/{startdate}/{days}")
     suspend fun myNewShows(
@@ -31,7 +31,7 @@ interface Calendars {
     /**
      * **OAuth Required**
      *
-     * @see .seasonPremieres
+     * @see [seasonPremieres]
      */
     @GET("calendars/my/shows/premieres/{startdate}/{days}")
     suspend fun mySeasonPremieres(
@@ -42,10 +42,21 @@ interface Calendars {
     /**
      * **OAuth Required**
      *
-     * @see .movies
+     * @see [movies]
      */
     @GET("calendars/my/movies/{startdate}/{days}")
     suspend fun myMovies(
+        @Path("startdate") startDate: String?,
+        @Path("days") days: Int
+    ): List<CalendarMovieEntry>?
+
+    /**
+     * **OAuth Required**
+     *
+     * @see [dvd]
+     */
+    @GET("calendars/my/dvd/{startdate}/{days}")
+    suspend fun myDvd(
         @Path("startdate") startDate: String?,
         @Path("days") days: Int
     ): List<CalendarMovieEntry>?
@@ -94,6 +105,18 @@ interface Calendars {
      */
     @GET("calendars/all/movies/{startdate}/{days}")
     suspend fun movies(
+        @Path("startdate") startDate: String?,
+        @Path("days") days: Int
+    ): List<CalendarMovieEntry>?
+
+    /**
+     * Returns all movies with a DVD release date during the time period specified.
+     *
+     * @param startDate Start the calendar on this date. Example: 2014-09-01.
+     * @param days Number of days to display. Example: 7.
+     */
+    @GET("calendars/all/dvd/{startdate}/{days}")
+    suspend fun dvd(
         @Path("startdate") startDate: String?,
         @Path("days") days: Int
     ): List<CalendarMovieEntry>?
