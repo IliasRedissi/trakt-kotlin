@@ -18,7 +18,6 @@ bin
 #Gradle
 .gradle/
 build/
-gradle.properties
 
 #############
 ## Android
