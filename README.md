@@ -17,7 +17,7 @@ API key (OAuth client id) and optionally a given user access token.
 Add the following dependency to your Gradle project:
 
 ```groovy
-implementation("com.redissi.trakt:trakt-kotlin:1.0.0-alpha01")
+implementation("com.redissi.trakt:trakt-kotlin:1.0.0-SNAPSHOT")
 ```
 
 Or for Maven:
@@ -26,7 +26,7 @@ Or for Maven:
 <dependency>
   <groupId>com.redissi.trakt</groupId>
   <artifactId>trakt-kotlin</artifactId>
-  <version>1.0.0-alpha01</version>
+  <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
